@@ -13,11 +13,6 @@ async function getUserIdFromRequest(c: Hono.Context) {
   return (await c.req.text()).split("=")[1];
 }
 
-app.get('/', (c) => {
-  console.log(c.env);
-  return c.text(c.env.CLIENT_ID)
-})
-
 app.get('/install', async (c) => {
   let fetch_access_token = await fetch("https://usetrmnl.com/oauth/token", {
     method: "POST",
