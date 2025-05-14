@@ -97,12 +97,17 @@ app.get('/install', async (c) => {
 
   let access_token = await fetch_access_token.json().access_token;
 
+  if (!access_token) {
+    return c.text("Could not communicate with TRMNL's servers", 500);
+  }
+
   return c.redirect(c.req.query('installation_callback_url'));
 })
 
 app.post('/success', async (c) => {
   let body = await c.req.json();
 
+  // First time creating the KV for this UUID
   await c.env.USER_CONFIGURATION.put(body.user.uuid, JSON.stringify(
     {
       "plugin_setting_id": body.user.plugin_setting_id,
@@ -117,20 +122,13 @@ app.get('/manage', async (c) => {
   let user_configuration = JSON.parse(await c.env.USER_CONFIGURATION.get(user_uuid));
 
   if (!user_configuration) {
-    return c.json({ error: "Access denied" }, 500);
+    return c.text("Access denied", 500);
   }
 
   let error = "";
   if (user_configuration.username && user_configuration.password && user_configuration.connected == null) {
     // Try connecting to Geovelo
-    let auth = await fetch("https://backend.geovelo.fr/api/v1/authentication/geovelo", {
-      method: "POST",
-      headers: {
-        "Source": "website",
-        "Api-Key": "0f8c781a-b4b4-4d19-b931-1e82f22e769f",
-        "Authentication": btoa(`${user_configuration.username};${user_configuration.password}`),
-      }
-    });
+    let auth = await connectToGeovelo(user_configuration.username, user_configuration.password);
 
     if (auth.status == 429) {
       error = "Too many requests, please try again later.";
@@ -145,8 +143,6 @@ app.get('/manage', async (c) => {
       await c.env.USER_CONFIGURATION.put(user_uuid, JSON.stringify(user_configuration));
     }
   }
-
-  console.log(user_configuration);
 
   return c.html(
     <html>
@@ -188,13 +184,13 @@ app.post('/manage', async (c) => {
   let password = body.get("password");
 
   if (!user_configuration || !username || !password) {
-    return c.json({ error: "Username or password is missing" }, 500);
+    return c.text("Username or password is missing", 500);
   }
 
   // If it's the placeholder, we keep the old saved password
   password = (password === PASSWORD_PLACEHOLDER) ? user_configuration.password : password;
 
-  // If the username or password has changed, we need to reset the connection
+  // If the username or password has changed, we need to retest the connection
   if (username != user_configuration.username || password != user_configuration.password) {
     user_configuration.username = username;
     user_configuration.password = password;
@@ -210,7 +206,7 @@ app.post('/markup', async (c) => {
   let user_configuration = JSON.parse(await c.env.USER_CONFIGURATION.get(user_uuid));
 
   if (!user_configuration) {
-    return c.json({ error: "Configuration is missing" }, 500);
+    return c.text("Configuration is missing", 500);
   }
 
   let auth = connectToGeovelo(user_configuration.username, user_configuration.password);
