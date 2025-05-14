@@ -2,6 +2,9 @@ import { Hono } from 'hono'
 import { html } from 'hono/html'
 import { FC } from 'hono/jsx';
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
+import { jsxRenderer, useRequestContext } from 'hono/jsx-renderer'
+
+const PASSWORD_PLACEHOLDER = "     ";
 
 type Bindings = {
   USER_CONFIGURATION: KVNamespace
@@ -9,30 +12,371 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-const PASSWORD_PLACEHOLDER = "     ";
+
+
+
+
+
+const foo = {
+  count: 6,
+  next: null,
+  next_path: null,
+  previous: null,
+  previous_path: null,
+  results: [
+    {
+      id: 32861262,
+      title: 'Trajet matinal à vélo',
+      computed_route_id: 'bG9jPTQ3LjM5NTk0NTgsMC43MzU1MDYyJmxvYz00Ny4zNjk0NzM1LDAuNzE4Njc5NCNFWFBFUlQjRmFsc2UjTUVESUFOIzI1I0ZhbHNlI05vbmUjMjAyNS0wNS0xNCAwODowOTo0My43NTAxODUjVFJBRElUSU9OQUwjMCMwI0ZBU1RFUiNGYWxzZSNUcnVl',
+      distance: 4768,
+      duration: 803,
+      calories: 113468,
+      average_speed: 21.38,
+      vertical_gain: 9,
+      vertical_loss: 9,
+      record_source: 'NAVIGATION',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-14T08:10:06.908000',
+      naive_local_end_datetime: '2025-05-14T08:23:29.945000',
+      start_datetime: '2025-05-14T08:10:06.908000+02:00',
+      end_datetime: '2025-05-14T08:23:29.945000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32861262.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32861262.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    },
+    {
+      id: 32830446,
+      title: 'Trajet à vélo en soirée',
+      computed_route_id: 'bG9jPTQ3LjM2OTA1NzYsMC43MTgxNDIxJmxvYz00Ny4zOTU5NTgwMzUwNzIzOCwwLjczNTU5NjY5OTIyNDkxNCNFWFBFUlQjRmFsc2UjTUVESUFOIzI1I0ZhbHNlI05vbmUjMjAyNS0wNS0xMyAxNzo1OTozMy41ODk1MDMjVFJBRElUSU9OQUwjMCMwI0ZBU1RFUiNGYWxzZSNUcnVl',
+      distance: 4822,
+      duration: 696,
+      calories: 136625,
+      average_speed: 24.94,
+      vertical_gain: 9,
+      vertical_loss: 9,
+      record_source: 'NAVIGATION',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-13T18:00:25.743000',
+      naive_local_end_datetime: '2025-05-13T18:12:01.758000',
+      start_datetime: '2025-05-13T18:00:25.743000+02:00',
+      end_datetime: '2025-05-13T18:12:01.758000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32830446.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32830446.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    },
+    {
+      id: 32792968,
+      title: 'Trajet matinal à vélo',
+      computed_route_id: 'bG9jPTQ3LjM5NTk0NDUsMC43MzU1MDg1JmxvYz00Ny4zNjk0NzM1LDAuNzE4Njc5NCNFWFBFUlQjRmFsc2UjTUVESUFOIzI1I0ZhbHNlI05vbmUjMjAyNS0wNS0xMyAwODo1NDoyMy4xMDAyNTAjVFJBRElUSU9OQUwjMCMwI0ZBU1RFUiNGYWxzZSNUcnVl',
+      distance: 4640,
+      duration: 646,
+      calories: 134759,
+      average_speed: 25.84,
+      vertical_gain: 6,
+      vertical_loss: 6,
+      record_source: 'NAVIGATION',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-13T08:54:27.408000',
+      naive_local_end_datetime: '2025-05-13T09:05:14.016000',
+      start_datetime: '2025-05-13T08:54:27.408000+02:00',
+      end_datetime: '2025-05-13T09:05:14.016000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32792968.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32792968.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    },
+    {
+      id: 32767206,
+      title: 'Trajet à vélo en soirée',
+      computed_route_id: null,
+      distance: 2619,
+      duration: 588,
+      calories: 43216,
+      average_speed: 16.04,
+      vertical_gain: 0,
+      vertical_loss: 0,
+      record_source: 'MANUAL',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-12T19:17:53.798000',
+      naive_local_end_datetime: '2025-05-12T19:27:41.811000',
+      start_datetime: '2025-05-12T19:17:53.798000+02:00',
+      end_datetime: '2025-05-12T19:27:41.811000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32767206.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32767206.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'NOT_COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    },
+    {
+      id: 32759220,
+      title: 'Trajet à vélo en soirée',
+      computed_route_id: 'bG9jPTQ3LjM2OTA0MzQsMC43MTgxNzA5JmxvYz00Ny4zOTU5NTgwMzUwNzIzOCwwLjczNTU5NjY5OTIyNDkxNCNFWFBFUlQjRmFsc2UjTUVESUFOIzI1I0ZhbHNlI05vbmUjMjAyNS0wNS0xMiAxODowOTozMy4xNjAyODgjVFJBRElUSU9OQUwjMCMwI0ZBU1RFUiNGYWxzZSNUcnVl',
+      distance: 4973,
+      duration: 897,
+      calories: 112602,
+      average_speed: 19.95,
+      vertical_gain: 12,
+      vertical_loss: 12,
+      record_source: 'NAVIGATION',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-12T18:09:47.467000',
+      naive_local_end_datetime: '2025-05-12T18:24:44.728000',
+      start_datetime: '2025-05-12T18:09:47.467000+02:00',
+      end_datetime: '2025-05-12T18:24:44.728000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32759220.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32759220.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    },
+    {
+      id: 32723784,
+      title: 'Trajet matinal à vélo',
+      computed_route_id: 'bG9jPTQ3LjM5NTk0NDUsMC43MzU1MDg2JmxvYz00Ny4zNjk0NzM1LDAuNzE4Njc5NCNFWFBFUlQjRmFsc2UjTUVESUFOIzI1I0ZhbHNlI05vbmUjMjAyNS0wNS0xMiAwODo0Mjo0MS4wMjI1NzQjVFJBRElUSU9OQUwjMCMwI0ZBU1RFUiNGYWxzZSNUcnVl',
+      distance: 4623,
+      duration: 733,
+      calories: 114857,
+      average_speed: 22.7,
+      vertical_gain: 6,
+      vertical_loss: 6,
+      record_source: 'NAVIGATION',
+      local_timezone: 'Europe/Paris',
+      naive_local_start_datetime: '2025-05-12T08:42:50.772000',
+      naive_local_end_datetime: '2025-05-12T08:55:03.950000',
+      start_datetime: '2025-05-12T08:42:50.772000+02:00',
+      end_datetime: '2025-05-12T08:55:03.950000+02:00',
+      cleaned_version: 4,
+      preview: '/media/user-trace-preview/no-limit/preview_32723784.png',
+      preview_300_200: '/media/user-trace-preview/no-limit/preview_300_200_32723784.png',
+      clean_status: 'CLEAN',
+      has_problem: false,
+      usertracegameprogress: [Object],
+      commuting_status: 'COMMUTING',
+      is_bike_automatically_classified: true,
+      is_bike_manually_classified: null
+    }
+  ]
+};
 
 const Layout: FC = (props) => {
   return (
-    <html lang="en">
+    <html>
       <body>{props.children}</body>
     </html>
   )
 }
 
-const Top: FC<{ messages: string[] }> = (props: {
-  messages: string[]
+const Top: FC<{ messages: object[] }> = (props: {
+  messages: object[]
 }) => {
   return (
     <Layout>
       <h1>Hello Hono!</h1>
       <ul>
         {props.messages.map((message) => {
-          return <li>{message}!!</li>
+          return <li>{message.title}</li>
         })}
       </ul>
     </Layout>
   )
 }
+
+const Mine: FC<{ trips: object[] }> = (props: {
+  trips: object[]
+}) => {
+  return (
+  <div>
+    <div class="layout">
+      <div class="list" data-list-limit="true" data-list-max-height="200" data-list-hidden-count="false" data-list-max-columns="1">
+        {props.trips.map((trip) => {
+          return <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="title title--small">{trip.title}</span>
+            <span class="description">FOO</span>
+            <div class="flex gap--xsmall">
+              <span class="label label--small label--underline">FOO</span>
+            </div>
+          </div>
+          <img class="image-dither" height="52px" src="https://backend.geovelo.fr{{ trip.preview }}"/>
+        </div>
+        })}
+      </div>
+    </div>
+
+    <div class="title_bar">
+      <img class="image" src="https://geovelo.app/favicon.svg"/>
+      <span class="title">Geovelo</span>
+      <span class="instance">Last trips</span>
+    </div>
+  </div>
+  )
+}
+
+
+
+// Helper function for date formatting (from previous answer)
+const formatTripDate = (dateString, locale = 'en-US') => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    const parts = {
+        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date),
+        month: new Intl.DateTimeFormat(locale, { month: 'short' }).format(date),
+        day: new Intl.DateTimeFormat(locale, { day: '2-digit' }).format(date),
+        year: new Intl.DateTimeFormat(locale, { year: 'numeric' }).format(date),
+        hour: new Intl.DateTimeFormat(locale, { hour: '2-digit', hour12: false }).format(date),
+        minute: new Intl.DateTimeFormat(locale, { minute: '2-digit' }).format(date),
+    };
+    return `${parts.weekday}, ${parts.month} ${parts.day}, ${parts.year} — ${parts.hour}:${parts.minute}`;
+  } catch (error) {
+    console.error("Error formatting date:", dateString, error);
+    return dateString;
+  }
+};
+
+
+// ---- TripItem Component ----
+// Represents a single trip in the list
+// Props:
+// - trip: An object containing details of a single trip
+// - locale: The user's locale for date formatting
+export const TripItem = ({ trip, locale }) => {
+  const duration_h = Math.round(trip.duration / 3600);
+  const duration_min = Math.floor(trip.duration / 60) % 60;
+  const distance_km = (trip.distance / 1000.0).toFixed(1);
+
+  return (
+    <div className="item">
+      <div className="meta"></div>
+      <div className="content">
+        <span className="title title--small">{trip.title}</span>
+        <span className="description">
+          {distance_km} km —{' '}
+          {duration_h > 0 && <>{duration_h} h </>}
+          {duration_min} min — {trip.average_speed} km/h average
+        </span>
+        <div className="flex gap--xsmall">
+          <span className="label label--small label--underline">
+            {formatTripDate(trip.start_datetime, locale)}
+          </span>
+        </div>
+      </div>
+      <img
+        className="image-dither"
+        height="52px"
+        src={`https://backend.geovelo.fr${trip.preview}`}
+        alt={`Preview for ${trip.title || 'trip'}`}
+      />
+    </div>
+  );
+};
+
+// ---- TripList Component ----
+// Renders the list of trips
+// Props:
+// - results: An array of trip objects
+// - trmnl: An object containing trmnl-specific data (like user.locale)
+export const TripList = ({ results, trmnl }) => {
+  const trips = results || [];
+  const userLocale = trmnl?.user?.locale || 'en-US';
+
+  return (
+    <div
+      className="list"
+      data-list-limit="true"
+      data-list-max-height="200"
+      data-list-hidden-count="false"
+      data-list-max-columns="1"
+    >
+      {trips.map((trip, index) => (
+        <TripItem key={trip.id || index} trip={trip} locale={userLocale} />
+      ))}
+    </div>
+  );
+};
+
+// ---- TitleBar Component ----
+// Renders the title bar section
+// Props:
+// - instanceName: The name of the instance from trmnl.plugin_settings
+export const TitleBar = ({ instanceName }) => {
+  return (
+    <div className="title_bar">
+      <img className="image" src="https://geovelo.app/favicon.svg" alt="GeoVelo Favicon" />
+      <span className="title">{instanceName || 'GeoVelo'}</span>
+      <span className="instance">Last trips</span>
+    </div>
+  );
+};
+
+// ---- Main Page Layout Component ----
+// Combines TripList and TitleBar
+// Props:
+// - results: An array of trip objects
+// - trmnl: An object containing trmnl-specific data
+export const TripsPageLayout = ({ results, trmnl }) => {
+  return (
+    <> {/* Use a Fragment because we have two sibling top-level divs */}
+      <div className="layout">
+        <TripList results={results} trmnl={trmnl} />
+      </div>
+      <TitleBar instanceName={trmnl?.plugin_settings?.instance_name} />
+    </>
+  );
+};
+const mockTrmnl = {
+  user: { locale: 'fr-FR' },
+  plugin_settings: { instance_name: "My GeoVelo Instance" }
+};
+app.get('/test', (c) => {
+  const mockResults = [
+    { id: 1, duration: 7200 + 1800, title: "Morning Ride", distance: 25600, average_speed: 18.5, start_datetime: "2023-10-26T08:00:00Z", preview: "/path/to/preview1.png" },
+    { id: 2, duration: 3000, title: "Evening Commute", distance: 12300, average_speed: 20.1, start_datetime: "2023-10-25T17:30:00Z", preview: "/path/to/preview2.png" },
+  ];
+  
+
+  // The Layout middleware will wrap this with <html>, <head>, <body>
+  return c.render(
+    <TripsPageLayout results={foo.results} trmnl={mockTrmnl} />,
+    { title: "My Trips" } // Pass title to the main Layout component
+  );
+
+  
+  const messages = ['Good Morning', 'Good Evening', 'Good Night']
+  return c.html(<Mine trips={foo.results} />)
+})
+
+
+
+
+
+
 
 const LoginForm = (props) => {
   return (
@@ -97,9 +441,9 @@ app.get('/install', async (c) => {
 
   let access_token = await fetch_access_token.json().access_token;
 
-  if (!access_token) {
-    return c.text("Could not communicate with TRMNL's servers", 500);
-  }
+  //if (!access_token) {
+  //  return c.text("Could not communicate with TRMNL's servers", 500);
+  //}
 
   return c.redirect(c.req.query('installation_callback_url'));
 })
@@ -268,33 +612,7 @@ app.post('/markup', async (c) => {
   let average_distance = total_distance / count;
 
   return c.json({
-    markup: html`
-<div class="layout">
-  <div class="list" data-list-limit="true" data-list-max-height="200" data-list-hidden-count="false" data-list-max-columns="1">
-    {% for trip in results %}
-    {% assign duration_h   = trip.duration | divided_by: 3600 | round %}
-    {% assign duration_min = trip.duration | divided_by: 60 | modulo: 60 %}
-
-    <div class="item">
-      <div class="meta"></div>
-      <div class="content">
-        <span class="title title--small">{{ trip.title }}</span>
-        <span class="description">{{ trip.distance | divided_by: 1000.0 | round: 1 }} km — {% if duration_h > 0 %}{{ duration_h }} h {% endif %}{{ duration_min }} min — {{ trip.average_speed }} km/h average</span>
-        <div class="flex gap--xsmall">
-          <span class="label label--small label--underline">{{ trip.start_datetime | l_date: "%a, %b %d, %Y — %H:%M", trmnl.user.locale }}</span>
-        </div>
-      </div>
-      <img class="image-dither" height="52px" src="https://backend.geovelo.fr{{ trip.preview }}">
-    </div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="title_bar">
-  <img class="image" src="https://geovelo.app/favicon.svg">
-  <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
-  <span class="instance">Last trips</span>
-</div>`,
+    markup: html`${<TripsPageLayout results={foo.results} trmnl={mockTrmnl} />}`.toString(),
     markup_half_horizontal: '<div class="view view--half_horizontal">Your content</div>',
     markup_half_vertical: '<div class="view view--half_vertical">Your content</div>',
     markup_quadrant: '<div class="view view--quadrant">' + total_distance + '</div>'
