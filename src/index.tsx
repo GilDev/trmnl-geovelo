@@ -81,12 +81,16 @@ async function connectToGeovelo(username: string, password: string) {
 }
 
 app.get('/install', async (c) => {
+  if (!c.env.TRMNL_CLIENT_ID || !c.env.TRMNL_CLIENT_SECRET) {
+    return c.text("TRMNL_CLIENT_ID or TRMNL_CLIENT_SECRET is missing", 500);
+  }
+
   let fetch_access_token = await fetch("https://usetrmnl.com/oauth/token", {
     method: "POST",
     body: JSON.stringify({
       code: c.req.query('code'),
-      client_id: '***REMOVED***',
-      client_secret: '***REMOVED***',
+      client_id: c.env.TRMNL_CLIENT_ID,
+      client_secret: c.env.TRMNL_CLIENT_SECRET,
       grant_type: 'authorization_code'
     }),
   });
