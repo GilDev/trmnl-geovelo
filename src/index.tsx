@@ -4,6 +4,11 @@ import { FC } from 'hono/jsx';
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
 import { jsxRenderer, useRequestContext } from 'hono/jsx-renderer'
 
+import { installNunjucks } from "hono-nunjucks";
+import templates from "./precompiled.mjs";
+
+
+
 const PASSWORD_PLACEHOLDER = "     ";
 
 type Bindings = {
@@ -13,6 +18,12 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 
+app.use(
+  "*",
+  installNunjucks({
+    templates
+  })
+);
 
 
 
@@ -310,7 +321,7 @@ export const TripList = ({ results, trmnl }) => {
     <div
       className="list"
       data-list-limit="true"
-      data-list-max-height="200"
+      data-list-max-height="400"
       data-list-hidden-count="false"
       data-list-max-columns="1"
     >
@@ -354,25 +365,40 @@ const mockTrmnl = {
   user: { locale: 'fr-FR' },
   plugin_settings: { instance_name: "My GeoVelo Instance" }
 };
-app.get('/test', (c) => {
-  const mockResults = [
-    { id: 1, duration: 7200 + 1800, title: "Morning Ride", distance: 25600, average_speed: 18.5, start_datetime: "2023-10-26T08:00:00Z", preview: "/path/to/preview1.png" },
-    { id: 2, duration: 3000, title: "Evening Commute", distance: 12300, average_speed: 20.1, start_datetime: "2023-10-25T17:30:00Z", preview: "/path/to/preview2.png" },
-  ];
-  
+app.get('/test', async (c) => {
+  let foo = await fetch('http://127.0.0.1:8787/markup', {
+    method: 'POST',
+    body: "user_id=674c9d99-cea1-4e52-9025-9efbe0e30901",
+  });
 
-  // The Layout middleware will wrap this with <html>, <head>, <body>
-  return c.render(
-    <TripsPageLayout results={foo.results} trmnl={mockTrmnl} />,
-    { title: "My Trips" } // Pass title to the main Layout component
-  );
+  let data = await foo.json();
+  let page = data.markup;
 
+  return c.html(`
+<!DOCTYPE html>
+<html>
+  <head>
   
-  const messages = ['Good Morning', 'Good Evening', 'Good Night']
-  return c.html(<Mine trips={foo.results} />)
+    <link rel="stylesheet" href="https://usetrmnl.com/css/latest/plugins.css">
+    <script src="https://usetrmnl.com/js/latest/plugins.js"></script>
+  </head>
+  <body class="environment trmnl">
+    <div class="screen">
+      <div class="view view--full">
+    ${page}
+    </div>
+    </div>
+  </body>
+</html>`);
 })
 
+app.get('/test2', async (c) => {
+  const t = c.get("t");
 
+  const rendered = t.render("hello", { username: "GilDev" });
+
+  return c.html(rendered);
+})
 
 
 
@@ -596,6 +622,7 @@ app.post('/markup', async (c) => {
 
   let data = await traces.json();
   let count = data.count;
+  console.log(data);
 
   let total_distance = 0;
   let total_duration = 0;
