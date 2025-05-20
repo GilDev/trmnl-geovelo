@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { html } from "hono/html";
+import { trimTrailingSlash } from 'hono/trailing-slash'
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
 import { Layout, LoginForm, Alert } from "./layout";
 import {
@@ -15,7 +15,8 @@ type Bindings = {
   USER_CONFIGURATION: KVNamespace;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: Bindings }>({ strict: false });
+app.use(trimTrailingSlash())
 
 const PASSWORD_PLACEHOLDER = "     ";
 
