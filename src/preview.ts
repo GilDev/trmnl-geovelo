@@ -1,28 +1,27 @@
-import { Hono } from 'hono';
-import { html } from 'hono/html';
+import { Hono } from "hono";
+import { html } from "hono/html";
 import {
   getMainMarkup,
   getHalfHorizontalMarkup,
   getHalfVerticalMarkup,
   getQuadrantMarkup,
-} from './markup';
+} from "./markup";
 
 // Preview Layout Component (moved from layout.ts)
-export const PreviewLayout = (props: { title: string; children: any }) => html`
+export const PreviewLayout = (props: { title: string; children: any; size: string }) => html`
   <!DOCTYPE html>
   <html>
     <head>
       <title>${props.title}</title>
-      <link rel="stylesheet" href="https://usetrmnl.com/assets/plugin.css">
-      <style>
-        body { margin: 20px; font-family: sans-serif; }
-        .preview-container { border: 1px solid #ccc; padding: 10px; margin-top: 10px; background-color: var(--trmnl-primary-bg-color, #fff); color: var(--trmnl-primary-text-color, #000); }
-      </style>
+      <link
+        rel="stylesheet"
+        href="https://usetrmnl.com/css/latest/plugins.css"
+      />
+      <script src="https://usetrmnl.com/js/latest/plugins.js"></script>
     </head>
-    <body>
-      <h1>${props.title}</h1>
-      <div class="preview-container">
-        ${props.children}
+    <body class="environment trmnl">
+      <div class="screen">
+        <div class="view view--${props.size}">${props.children}</div>
       </div>
     </body>
   </html>
@@ -59,38 +58,42 @@ const mockTotalDistance = mockTraceData.reduce(
 
 const previewRoutes = new Hono();
 
-previewRoutes.get('/', (c) => {
+previewRoutes.get("/", (c) => {
   return c.html(
     PreviewLayout({
       title: "Preview - Main Markup",
+      size: "full",
       children: getMainMarkup(mockTraceData),
     })
   );
 });
 
-previewRoutes.get('/half-horizontal', (c) => {
+previewRoutes.get("/horizontal", (c) => {
   return c.html(
     PreviewLayout({
       title: "Preview - Half Horizontal Markup",
-      children: getHalfHorizontalMarkup(), 
+      size: "half_horizontal",
+      children: getHalfHorizontalMarkup(mockTraceData),
     })
   );
 });
 
-previewRoutes.get('/half-vertical', (c) => {
+previewRoutes.get("/vertical", (c) => {
   return c.html(
     PreviewLayout({
       title: "Preview - Half Vertical Markup",
-      children: getHalfVerticalMarkup(), 
+      size: "half_vertical",
+      children: getHalfVerticalMarkup(mockTraceData),
     })
   );
 });
 
-previewRoutes.get('/quadrant', (c) => {
+previewRoutes.get("/quadrant", (c) => {
   return c.html(
     PreviewLayout({
       title: "Preview - Quadrant Markup",
-      children: getQuadrantMarkup(mockTotalDistance),
+      size: "quadrant",
+      children: getQuadrantMarkup(mockTraceData),
     })
   );
 });
