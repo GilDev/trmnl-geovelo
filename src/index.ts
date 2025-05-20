@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { trimTrailingSlash } from 'hono/trailing-slash'
-import { format, subDays, startOfWeek, lastDayOfWeek, max } from "date-fns";
+import { trimTrailingSlash } from "hono/trailing-slash";
+import { format, subDays } from "date-fns";
 import { Layout, LoginForm, Alert } from "./layout";
 import {
   getMainMarkup,
@@ -10,32 +10,23 @@ import {
   getErrorMarkup,
 } from "./markup";
 import { previewRoutes } from "./preview";
+import {
+  connectToGeovelo,
+  fetchUserTraces,
+  processTracesData,
+} from "./geovelo";
 
 type Bindings = {
   USER_CONFIGURATION: KVNamespace;
 };
 
 const app = new Hono<{ Bindings: Bindings }>({ strict: false });
-app.use(trimTrailingSlash())
+app.use(trimTrailingSlash());
 
 const PASSWORD_PLACEHOLDER = "     ";
 
 async function getUserIdFromRequest(c: Hono.Context) {
   return (await c.req.text()).split("=")[1];
-}
-
-async function connectToGeovelo(username: string, password: string) {
-  return await fetch(
-    "https://backend.geovelo.fr/api/v1/authentication/geovelo",
-    {
-      method: "POST",
-      headers: {
-        Source: "website",
-        "Api-Key": "0f8c781a-b4b4-4d19-b931-1e82f22e769f",
-        Authentication: btoa(`${username};${password}`),
-      },
-    }
-  );
 }
 
 app.get("/install", async (c) => {
@@ -190,51 +181,8 @@ app.post("/markup", async (c) => {
   let user_id = auth.headers.get("userid");
   let token = auth.headers.get("authorization");
 
-  let today = new Date();
-  let today_formatted = format(today, "dd-MM-yyyy");
-  let start_formatted = format(
-    startOfWeek(today, { weekStartsOn: 1 }),
-    "dd-MM-yyyy"
-  );
-  let end_formatted = format(
-    lastDayOfWeek(today, { weekStartsOn: 1 }),
-    "dd-MM-yyyy"
-  );
-
-  let traces = await fetch(
-    `https://backend.geovelo.fr/api/v6/users/${user_id}/traces?period=custom&date_start=${start_formatted}&date_end=${end_formatted}&ordering=-start_datetime&page=1&page_size=50`,
-    {
-      method: "GET",
-      headers: {
-        Source: "website",
-        "Api-Key": "0f8c781a-b4b4-4d19-b931-1e82f22e769f",
-        Authorization: token,
-      },
-    }
-  );
-
-  let data = await traces.json();
-
-  // Calculate useful values
-  let total_distance = 0;
-  let total_duration = 0;
-  let total_average_speed = 0;
-  data.results.forEach((trace: any) => {
-    total_distance += trace.distance;
-    total_duration += trace.duration;
-    total_average_speed += trace.average_speed;
-  });
-
-  let sanitized_data = {
-    first_name: "John",
-    count: data.count,
-    average_speed: total_average_speed / data.count,
-    average_duration: total_duration / data.count,
-    average_distance: total_distance / data.count,
-    longest_duration: max(data.results.map((trace: any) => trace.duration)),
-    longest_distance: max(data.results.map((trace: any) => trace.distance)),
-    last_trips: data.results.slice(-3),
-  }
+  let data = await fetchUserTraces(user_id, token);
+  let sanitized_data = processTracesData(data);
 
   return c.json({
     markup: getMainMarkup(sanitized_data),
