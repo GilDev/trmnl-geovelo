@@ -6,6 +6,7 @@ import {
   getHalfVerticalMarkup,
   getQuadrantMarkup,
 } from "./markup";
+import { mockupGeoveloData } from "./mockup_data";
 
 // Preview Layout Component (moved from layout.ts)
 export const PreviewLayout = (props: { title: string; children: any; size: string }) => html`
@@ -27,35 +28,6 @@ export const PreviewLayout = (props: { title: string; children: any; size: strin
   </html>
 `;
 
-// Mockup data for previews
-const mockTraceData = [
-  {
-    distance: 10500,
-    duration: 3600,
-    average_speed: 10.5,
-    name: "Morning Ride",
-    start_datetime: "2023-10-26T08:00:00Z",
-  },
-  {
-    distance: 5200,
-    duration: 1800,
-    average_speed: 10.4,
-    name: "Evening Commute",
-    start_datetime: "2023-10-26T18:00:00Z",
-  },
-  {
-    distance: 15000,
-    duration: 5400,
-    average_speed: 10.0,
-    name: "Weekend Trail",
-    start_datetime: "2023-10-22T10:00:00Z",
-  },
-];
-const mockTotalDistance = mockTraceData.reduce(
-  (sum, trace) => sum + trace.distance,
-  0
-);
-
 const previewRoutes = new Hono();
 
 previewRoutes.get("/", (c) => {
@@ -63,7 +35,7 @@ previewRoutes.get("/", (c) => {
     PreviewLayout({
       title: "Preview - Main Markup",
       size: "full",
-      children: getMainMarkup(mockTraceData),
+      children: getMainMarkup(mockupGeoveloData),
     })
   );
 });
@@ -73,7 +45,7 @@ previewRoutes.get("/horizontal", (c) => {
     PreviewLayout({
       title: "Preview - Half Horizontal Markup",
       size: "half_horizontal",
-      children: getHalfHorizontalMarkup(mockTraceData),
+      children: getHalfHorizontalMarkup(mockupGeoveloData),
     })
   );
 });
@@ -83,7 +55,7 @@ previewRoutes.get("/vertical", (c) => {
     PreviewLayout({
       title: "Preview - Half Vertical Markup",
       size: "half_vertical",
-      children: getHalfVerticalMarkup(mockTraceData),
+      children: getHalfVerticalMarkup(mockupGeoveloData),
     })
   );
 });
@@ -93,7 +65,7 @@ previewRoutes.get("/quadrant", (c) => {
     PreviewLayout({
       title: "Preview - Quadrant Markup",
       size: "quadrant",
-      children: getQuadrantMarkup(mockTraceData),
+      children: getQuadrantMarkup(mockupGeoveloData),
     })
   );
 });

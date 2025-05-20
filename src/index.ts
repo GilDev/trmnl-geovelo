@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { trimTrailingSlash } from 'hono/trailing-slash'
-import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
+import { format, subDays, startOfWeek, lastDayOfWeek, max } from "date-fns";
 import { Layout, LoginForm, Alert } from "./layout";
 import {
   getMainMarkup,
@@ -214,27 +214,33 @@ app.post("/markup", async (c) => {
   );
 
   let data = await traces.json();
-  let count = data.count;
 
+  // Calculate useful values
   let total_distance = 0;
   let total_duration = 0;
   let total_average_speed = 0;
-
   data.results.forEach((trace: any) => {
     total_distance += trace.distance;
     total_duration += trace.duration;
     total_average_speed += trace.average_speed;
   });
 
-  let average_speed = total_average_speed / count;
-  let average_duration = total_duration / count;
-  let average_distance = total_distance / count;
+  let sanitized_data = {
+    first_name: "John",
+    count: data.count,
+    average_speed: total_average_speed / data.count,
+    average_duration: total_duration / data.count,
+    average_distance: total_distance / data.count,
+    longest_duration: max(data.results.map((trace: any) => trace.duration)),
+    longest_distance: max(data.results.map((trace: any) => trace.distance)),
+    last_trips: data.results.slice(-3),
+  }
 
   return c.json({
-    markup: getMainMarkup(data.results),
-    markup_half_horizontal: getHalfHorizontalMarkup(),
-    markup_half_vertical: getHalfVerticalMarkup(),
-    markup_quadrant: getQuadrantMarkup(total_distance),
+    markup: getMainMarkup(sanitized_data),
+    markup_half_horizontal: getHalfHorizontalMarkup(sanitized_data),
+    markup_half_vertical: getHalfVerticalMarkup(sanitized_data),
+    markup_quadrant: getQuadrantMarkup(sanitized_data),
   });
 });
 
