@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { html } from 'hono/html'
-import { FC } from 'hono/jsx';
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
+import { Layout, LoginForm, Alert } from './layout';
 
 type Bindings = {
   USER_CONFIGURATION: KVNamespace
@@ -10,60 +10,6 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 const PASSWORD_PLACEHOLDER = "     ";
-
-const Layout: FC = (props) => {
-  return (
-    <html lang="en">
-      <body>{props.children}</body>
-    </html>
-  )
-}
-
-const Top: FC<{ messages: string[] }> = (props: {
-  messages: string[]
-}) => {
-  return (
-    <Layout>
-      <h1>Hello Hono!</h1>
-      <ul>
-        {props.messages.map((message) => {
-          return <li>{message}!!</li>
-        })}
-      </ul>
-    </Layout>
-  )
-}
-
-const LoginForm = (props) => {
-  return (
-    <form method="POST"> {/* Or whatever your action URL is */}
-      <h1>Login</h1>
-      <div>
-        <label htmlFor="username">Geovelo username (email):</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={props.username || ''} // Use prop or fallback to empty string
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="password">Geovelo password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={props.password || ''} // Use prop or fallback to empty string
-          required
-        />
-      </div>
-      <div>
-        <button type="submit">Log In</button>
-      </div>
-    </form>
-  )
-}
 
 async function getUserIdFromRequest(c: Hono.Context) {
   return (await c.req.text()).split("=")[1];
@@ -126,6 +72,7 @@ app.get('/manage', async (c) => {
   }
 
   let error = "";
+  let success = "";
   if (user_configuration.username && user_configuration.password && user_configuration.connected == null) {
     // Try connecting to Geovelo
     let auth = await connectToGeovelo(user_configuration.username, user_configuration.password);
@@ -135,6 +82,8 @@ app.get('/manage', async (c) => {
     } else {
       if (auth.status == 200) {
         user_configuration.connected = true;
+        success = "Connected to Geovelo successfully!";
+
       } else {
         user_configuration.connected = false;
         delete user_configuration.password; // No need to keep this as it is incorrect
@@ -145,33 +94,15 @@ app.get('/manage', async (c) => {
   }
 
   return c.html(
-    <html>
-      <head>
-        <title>Login Page</title>
-        <style>{`
-          body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 90vh; background-color: #f4f4f4; }
-          form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-          h1 { text-align: center; color: #333; }
-          div { margin-bottom: 15px; }
-          label { display: block; margin-bottom: 5px; color: #555; }
-          input[type="text"], input[type="password"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-          button { background-color:rgb(11, 11, 12); color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-          button:hover { background-color: #0056b3; }
-        `}</style>
-      </head>
-      <body>
-        {error}
-        {user_configuration.connected !== null && (
-          <p style={{ textAlign: 'center', color: user_configuration.connected ? 'green' : 'red' }}>
-            {user_configuration.connected ? 'Connected' : 'Not connected. Please log in.'}
-          </p>
-        )}
-        <LoginForm username={user_configuration.username} password={user_configuration.password ? PASSWORD_PLACEHOLDER : ""} />
-        {user_configuration.plugin_setting_id && (
-          <a href={`https://usetrmnl.com/plugin_settings/${user_configuration.plugin_setting_id}/edit?force_refresh=true`} class="back-button">Back to TRMNL</a>
-        )}
-      </body>
-    </html>
+    Layout({
+      title: "Geovelo Plugin Configuration",
+      children: LoginForm({ username: user_configuration.username, password: user_configuration.password ? PASSWORD_PLACEHOLDER : '' }),
+      alert: [
+        error ? Alert({type: "error", message: error}) : '',
+        success ? Alert({type: "success", message: success}) : ''
+      ],
+      user_configuration: user_configuration
+    })
   );
 })
 
