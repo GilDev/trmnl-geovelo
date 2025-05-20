@@ -98,22 +98,3 @@ export const Alert = (props: { type: string; message: string }) => {
     </article>
   `;
 };
-
-export const PreviewLayout = (props: { title: string; children: any }) => html`
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <title>${title}</title>
-      <link
-        rel="stylesheet"
-        href="https://usetrmnl.com/css/latest/plugins.css"
-      />
-      <script src="https://usetrmnl.com/js/latest/plugins.js"></script>
-    </head>
-    <body class="environment trmnl">
-      <div class="screen">
-        <div class="view view--full">${props.children}</div>
-      </div>
-    </body>
-  </html>
-`;
