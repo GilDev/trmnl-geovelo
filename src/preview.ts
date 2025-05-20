@@ -9,7 +9,11 @@ import {
 import { mockupGeoveloData } from "./mockup_data";
 
 // Preview Layout Component (moved from layout.ts)
-export const PreviewLayout = (props: { title: string; children: any; size: string }) => html`
+export const PreviewLayout = (props: {
+  title: string;
+  children: any;
+  size: string;
+}) => html`
   <!DOCTYPE html>
   <html>
     <head>
@@ -19,6 +23,13 @@ export const PreviewLayout = (props: { title: string; children: any; size: strin
         href="https://usetrmnl.com/css/latest/plugins.css"
       />
       <script src="https://usetrmnl.com/js/latest/plugins.js"></script>
+
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;350;375;400;450;600;700&display=swap"
+        rel="stylesheet"
+      />
     </head>
     <body class="environment trmnl">
       <div class="screen">
