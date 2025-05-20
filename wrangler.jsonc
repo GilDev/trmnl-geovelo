@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "trmnl-geovelo",
-  "main": "src/index.tsx",
+  "main": "src/index.ts",
   "compatibility_date": "2025-05-13",
   "assets": {
     "directory": "./public/",
