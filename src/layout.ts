@@ -1,10 +1,10 @@
 import { html, HtmlEscapedString } from 'hono/html'
 
-export const Layout = (props: { title: string; children?: HtmlEscapedString | HtmlEscapedString[]; user_configuration: any, alert: HtmlEscapedString | HtmlEscapedString[] }) => html`
+export const Layout = (props: { children?: HtmlEscapedString | HtmlEscapedString[]; user_configuration: {}, alert: HtmlEscapedString | HtmlEscapedString[] }) => html`
   <!DOCTYPE html>
   <html lang="en">
     <head>
-      <title>${props.title}</title>
+      <title>Geovelo TRMNL Plugin Configuration</title>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
     </head>
@@ -29,7 +29,7 @@ export const Layout = (props: { title: string; children?: HtmlEscapedString | Ht
 `
 
 export const LoginForm = (props: { username?: string; password?: string }) => {
-  return html`
+	return html`
     <form method="POST">
       <h1>Login</h1>
       <fieldset>
@@ -50,13 +50,31 @@ export const LoginForm = (props: { username?: string; password?: string }) => {
 }
 
 export const Alert = (props: { type: string; message: string }) => {
-  return html`
+	return html`
     <article>
       ${props.type == "error" ?
-        html`<header class="pico-background-red"><strong>❌ Error!</strong></header>` :
-        html`<header class="pico-background-green"><strong>✅ Success!</strong></header>`
-      }
+			html`<header class="pico-background-red"><strong>❌ Error!</strong></header>` :
+			html`<header class="pico-background-green"><strong>✅ Success!</strong></header>`
+		}
       ${props.message}
     </article>
   `
 }
+
+export const PreviewLayout = (props: { children: any }) => html`
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Geovelo TRMNL Plugin Preview</title>
+      <link rel="stylesheet" href="https://usetrmnl.com/css/latest/plugins.css">
+      <script src="https://usetrmnl.com/js/latest/plugins.js"></script>
+    </head>
+    <body class="environment trmnl">
+		<div class="screen">
+		<div class="view view--full">
+			${props.children}
+	</div>        
+      </div>
+    </body>
+  </html>
+`;

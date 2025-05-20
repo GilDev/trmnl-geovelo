@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { html } from 'hono/html'
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
-import { Layout, LoginForm, Alert } from './layout';
+import { Layout, LoginForm, Alert, PreviewLayout } from './layout';
 import { getMainMarkup, getHalfHorizontalMarkup, getHalfVerticalMarkup, getQuadrantMarkup, getErrorMarkup } from './markup';
 
 type Bindings = {
@@ -96,11 +96,10 @@ app.get('/manage', async (c) => {
 
   return c.html(
     Layout({
-      title: "Geovelo Plugin Configuration",
       children: LoginForm({ username: user_configuration.username, password: user_configuration.password ? PASSWORD_PLACEHOLDER : '' }),
       alert: [
-        error ? Alert({type: "error", message: error}) : '',
-        success ? Alert({type: "success", message: success}) : ''
+        error && Alert({type: "error", message: error}),
+        success && Alert({type: "success", message: success}),
       ],
       user_configuration: user_configuration
     })
@@ -189,6 +188,50 @@ app.post('/markup', async (c) => {
     markup_quadrant: getQuadrantMarkup(total_distance)
   });
 })
+
+// Mockup data for previews
+const mockTraceData = [
+  { distance: 10500, duration: 3600, average_speed: 10.5, name: "Morning Ride", start_datetime: "2023-10-26T08:00:00Z" },
+  { distance: 5200, duration: 1800, average_speed: 10.4, name: "Evening Commute", start_datetime: "2023-10-26T18:00:00Z" },
+  { distance: 15000, duration: 5400, average_speed: 10.0, name: "Weekend Trail", start_datetime: "2023-10-22T10:00:00Z" },
+];
+const mockTotalDistance = mockTraceData.reduce((sum, trace) => sum + trace.distance, 0);
+
+app.get('/preview', (c) => {
+  return c.html(
+    PreviewLayout({
+      title: "Preview - Main Markup",
+      children: getMainMarkup(mockTraceData)
+    })
+  );
+});
+
+app.get('/preview/half-horizontal', (c) => {
+  return c.html(
+    PreviewLayout({
+      title: "Preview - Half Horizontal Markup",
+      children: getHalfHorizontalMarkup() // Assuming this doesn't need specific data or can use defaults
+    })
+  );
+});
+
+app.get('/preview/half-vertical', (c) => {
+  return c.html(
+    PreviewLayout({
+      title: "Preview - Half Vertical Markup",
+      children: getHalfVerticalMarkup() // Assuming this doesn't need specific data or can use defaults
+    })
+  );
+});
+
+app.get('/preview/quadrant', (c) => {
+  return c.html(
+    PreviewLayout({
+      title: "Preview - Quadrant Markup",
+      children: getQuadrantMarkup(mockTotalDistance)
+    })
+  );
+});
 
 app.post('/uninstall', async (c) => {
   let body = await c.req.json();
