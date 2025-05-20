@@ -2,7 +2,7 @@ import { html, HtmlEscapedString } from "hono/html";
 
 export const Layout = (props: {
   children?: HtmlEscapedString | HtmlEscapedString[];
-  user_configuration: {};
+  user_configuration: any;
   alert: HtmlEscapedString | HtmlEscapedString[];
 }) => html`
   <!DOCTYPE html>
@@ -51,10 +51,15 @@ export const Layout = (props: {
   </html>
 `;
 
-export const LoginForm = (props: { username?: string; password?: string }) => {
+export const LoginForm = (props: {
+  username?: string;
+  password?: string;
+  period?: string;
+}) => {
+  const currentPeriod = props.period || "weekly"; // Default to weekly
+
   return html`
     <form method="POST">
-      <h1>Login</h1>
       <fieldset>
         <label>
           Username
@@ -77,9 +82,39 @@ export const LoginForm = (props: { username?: string; password?: string }) => {
             required
           />
         </label>
+
+        <label>
+          Cumulative Statistics Period
+          <select name="period" required>
+            <option
+              value="weekly"
+              ${currentPeriod === "weekly" ? "selected" : ""}
+            >
+              Weekly
+            </option>
+            <option
+              value="monthly"
+              ${currentPeriod === "monthly" ? "selected" : ""}
+            >
+              Monthly
+            </option>
+            <option
+              value="yearly"
+              ${currentPeriod === "yearly" ? "selected" : ""}
+            >
+              Yearly
+            </option>
+            <option
+              value="global"
+              ${currentPeriod === "global" ? "selected" : ""}
+            >
+              Global
+            </option>
+          </select>
+        </label>
       </fieldset>
 
-      <button type="submit">Log In</button>
+      <button type="submit">Save</button>
     </form>
   `;
 };
