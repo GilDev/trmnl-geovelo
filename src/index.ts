@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { html } from 'hono/html'
 import { format, subDays, startOfWeek, lastDayOfWeek } from "date-fns";
 import { Layout, LoginForm, Alert } from './layout';
+import { getMainMarkup, getHalfHorizontalMarkup, getHalfVerticalMarkup, getQuadrantMarkup, getErrorMarkup } from './markup';
 
 type Bindings = {
   USER_CONFIGURATION: KVNamespace
@@ -137,24 +138,7 @@ app.post('/markup', async (c) => {
   let user_configuration = JSON.parse(await c.env.USER_CONFIGURATION.get(user_uuid));
 
   if (!user_configuration || !user_configuration.connected) {
-    const error_layout = html`
-    <div class="layout">
-      <div class="columns">
-        <div class="column">
-          <div class="markdown gap--large">
-            <span class="title">Error</span>
-            <div class="content-element content clamp--20" data-content-max-height="320">
-              You are not connected, please check the configuration of the plugin.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="title_bar">
-      <img class="image" src="https://trmnl-public.s3.us-east-2.amazonaws.com/ji1q5vcii6v10zx86zqacf43rhjk">
-      <span class="title">Geovelo</span>
-    </div>`;
+    const error_layout = getErrorMarkup();
     return c.json({
       markup: error_layout,
       markup_half_horizontal: error_layout,
@@ -199,36 +183,10 @@ app.post('/markup', async (c) => {
   let average_distance = total_distance / count;
 
   return c.json({
-    markup: html`
-<div class="layout">
-  <div class="list" data-list-limit="true" data-list-max-height="200" data-list-hidden-count="false" data-list-max-columns="1">
-    {% for trip in results %}
-    {% assign duration_h   = trip.duration | divided_by: 3600 | round %}
-    {% assign duration_min = trip.duration | divided_by: 60 | modulo: 60 %}
-
-    <div class="item">
-      <div class="meta"></div>
-      <div class="content">
-        <span class="title title--small">{{ trip.title }}</span>
-        <span class="description">{{ trip.distance | divided_by: 1000.0 | round: 1 }} km — {% if duration_h > 0 %}{{ duration_h }} h {% endif %}{{ duration_min }} min — {{ trip.average_speed }} km/h average</span>
-        <div class="flex gap--xsmall">
-          <span class="label label--small label--underline">{{ trip.start_datetime | l_date: "%a, %b %d, %Y — %H:%M", trmnl.user.locale }}</span>
-        </div>
-      </div>
-      <img class="image-dither" height="52px" src="https://backend.geovelo.fr{{ trip.preview }}">
-    </div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="title_bar">
-  <img class="image" src="https://geovelo.app/favicon.svg">
-  <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
-  <span class="instance">Last trips</span>
-</div>`,
-    markup_half_horizontal: '<div class="view view--half_horizontal">Your content</div>',
-    markup_half_vertical: '<div class="view view--half_vertical">Your content</div>',
-    markup_quadrant: '<div class="view view--quadrant">' + total_distance + '</div>'
+    markup: getMainMarkup(data.results),
+    markup_half_horizontal: getHalfHorizontalMarkup(),
+    markup_half_vertical: getHalfVerticalMarkup(),
+    markup_quadrant: getQuadrantMarkup(total_distance)
   });
 })
 
