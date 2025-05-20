@@ -58,8 +58,12 @@ export function processTracesData(data: any) {
     average_speed: total_average_speed / data.count,
     average_duration: total_duration / data.count,
     average_distance: total_distance / data.count,
-    longest_duration: max(data.results.map((trace: any) => trace.duration)),
-    longest_distance: max(data.results.map((trace: any) => trace.distance)),
+    longest_duration: Math.max(
+      ...data.results.map((trace: any) => trace.duration)
+    ),
+    longest_distance: Math.max(
+      ...data.results.map((trace: any) => trace.distance)
+    ),
     last_trips: data.results.slice(-3),
   };
 }

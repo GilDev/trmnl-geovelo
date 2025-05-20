@@ -7,6 +7,7 @@ import {
   getQuadrantMarkup,
 } from "./markup";
 import { mockupGeoveloData } from "./mockup_data";
+import { processTracesData } from "./geovelo";
 
 // Preview Layout Component (moved from layout.ts)
 export const PreviewLayout = (props: {
@@ -46,7 +47,7 @@ previewRoutes.get("/", (c) => {
     PreviewLayout({
       title: "Preview - Main Markup",
       size: "full",
-      children: getMainMarkup(mockupGeoveloData),
+      children: getMainMarkup(processTracesData(mockupGeoveloData)),
     })
   );
 });
@@ -56,7 +57,7 @@ previewRoutes.get("/horizontal", (c) => {
     PreviewLayout({
       title: "Preview - Half Horizontal Markup",
       size: "half_horizontal",
-      children: getHalfHorizontalMarkup(mockupGeoveloData),
+      children: getHalfHorizontalMarkup(processTracesData(mockupGeoveloData)),
     })
   );
 });
@@ -66,7 +67,7 @@ previewRoutes.get("/vertical", (c) => {
     PreviewLayout({
       title: "Preview - Half Vertical Markup",
       size: "half_vertical",
-      children: getHalfVerticalMarkup(mockupGeoveloData),
+      children: getHalfVerticalMarkup(processTracesData(mockupGeoveloData)),
     })
   );
 });
@@ -76,7 +77,7 @@ previewRoutes.get("/quadrant", (c) => {
     PreviewLayout({
       title: "Preview - Quadrant Markup",
       size: "quadrant",
-      children: getQuadrantMarkup(mockupGeoveloData),
+      children: getQuadrantMarkup(processTracesData(mockupGeoveloData)),
     })
   );
 });
