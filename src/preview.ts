@@ -9,8 +9,7 @@ import {
 import { mockupGeoveloData } from "./mockup_data";
 import { processTracesData } from "./geovelo";
 
-// Preview Layout Component (moved from layout.ts)
-export const PreviewLayout = (props: {
+const PreviewLayout = (props: {
   title: string;
   children: any;
   size: string;
@@ -40,6 +39,31 @@ export const PreviewLayout = (props: {
   </html>
 `;
 
+const prepareData = (data: any) => {
+  data.trmnl = {
+    user: {
+      name: 'Jim Bob',
+      first_name: 'Jim',
+      last_name: 'Bob',
+      locale: 'en',
+      time_zone: 'Eastern Time (US & Canada)',
+      time_zone_iana: 'America/New_York',
+      utc_offset: -14400
+    },
+    device: {
+      friendly_id: 'XXXXXX',
+      percent_charged: 74.17,
+      wifi_strength: 50,
+      height: 480,
+      width: 800
+    },
+    system: { timestamp_utc: 1747596567 },
+    plugin_settings: { instance_name: 'Geovelo Instance' }
+  };
+
+  return data;
+}
+
 const previewRoutes = new Hono();
 
 previewRoutes.get("/", (c) => {
@@ -47,7 +71,7 @@ previewRoutes.get("/", (c) => {
     PreviewLayout({
       title: "Preview - Main Markup",
       size: "full",
-      children: getMainMarkup(processTracesData(mockupGeoveloData)),
+      children: getMainMarkup(prepareData(processTracesData(mockupGeoveloData))),
     })
   );
 });
@@ -57,7 +81,7 @@ previewRoutes.get("/horizontal", (c) => {
     PreviewLayout({
       title: "Preview - Half Horizontal Markup",
       size: "half_horizontal",
-      children: getHalfHorizontalMarkup(processTracesData(mockupGeoveloData)),
+      children: getHalfHorizontalMarkup(prepareData(processTracesData(mockupGeoveloData))),
     })
   );
 });
@@ -67,7 +91,7 @@ previewRoutes.get("/vertical", (c) => {
     PreviewLayout({
       title: "Preview - Half Vertical Markup",
       size: "half_vertical",
-      children: getHalfVerticalMarkup(processTracesData(mockupGeoveloData)),
+      children: getHalfVerticalMarkup(prepareData(processTracesData(mockupGeoveloData))),
     })
   );
 });
@@ -77,7 +101,7 @@ previewRoutes.get("/quadrant", (c) => {
     PreviewLayout({
       title: "Preview - Quadrant Markup",
       size: "quadrant",
-      children: getQuadrantMarkup(processTracesData(mockupGeoveloData)),
+      children: getQuadrantMarkup(prepareData(processTracesData(mockupGeoveloData))),
     })
   );
 });

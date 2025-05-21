@@ -19,12 +19,7 @@ const formatDateTime = (date: string) =>
 export const getMainMarkup = (data: any) => {
   const titleBar = html` <div class="title_bar">
     <img class="image" src="https://geovelo.app/favicon.svg" />
-    ${raw(
-      '<span class="title">{{ trmnl.plugin_settings.instance_name }}</span>'
-    )}
-    ${raw(
-      '<span class="instance">{{ trmnl.user.name | default: "User" }}</span>'
-    )}
+    <span class="title">${data.trmnl.plugin_settings.instance_name}</span>
   </div>`;
 
   return html`

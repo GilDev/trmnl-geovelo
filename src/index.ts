@@ -159,7 +159,9 @@ app.post("/manage", async (c) => {
 });
 
 app.post("/markup", async (c) => {
-  let user_uuid = await getUserIdFromRequest(c);
+  let user_uuid = c.req.query("user_uuid");
+  let trmnl = c.req.query("trmnl");
+  trmnl = JSON.parse(trmnl ?? '{}');
   let user_configuration = JSON.parse(
     await c.env.USER_CONFIGURATION.get(user_uuid)
   );
@@ -183,6 +185,7 @@ app.post("/markup", async (c) => {
 
   let data = await fetchUserTraces(user_id, token);
   let sanitized_data = processTracesData(data);
+  sanitized_data.trmnl = trmnl;
 
   return c.json({
     markup: getMainMarkup(sanitized_data),
