@@ -36,6 +36,9 @@ app.get("/install", async (c) => {
 
   let fetch_access_token = await fetch("https://usetrmnl.com/oauth/token", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       code: c.req.query("code"),
       client_id: c.env.TRMNL_CLIENT_ID,
@@ -44,10 +47,11 @@ app.get("/install", async (c) => {
     }),
   });
 
-  let access_token = await fetch_access_token.json().access_token;
+  let response = await fetch_access_token.json()
+  let access_token = response.access_token;
 
   if (!access_token) {
-    return c.text("Could not communicate with TRMNL's servers", 500);
+    return c.text("Could not communicate with TRMNL's servers: " + JSON.stringify(response), 500);
   }
 
   return c.redirect(c.req.query("installation_callback_url"));
