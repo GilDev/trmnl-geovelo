@@ -196,6 +196,8 @@ app.post("/markup", async (c) => {
   let sanitized_data = processTracesData(data);
   sanitized_data.trmnl = trmnl;
 
+  console.log(`Generating screen for ${trmnl?.user?.name}`);
+
   return c.json({
     markup: getMainMarkup(sanitized_data),
     markup_half_horizontal: getHalfHorizontalMarkup(sanitized_data),
@@ -212,6 +214,27 @@ app.post("/uninstall", async (c) => {
   let user_uuid = body.user_uuid;
   await c.env.USER_CONFIGURATION.delete(user_uuid);
   return c.text("Uninstallation OK");
+});
+
+app.post("/private", async (c) => {
+  let body = await c.req.json();
+  let username = body.username;
+  let password = body.password;
+
+  if (!username || !password) {
+    return c.json({error: "User credentials missing"}, 500);
+  }
+
+  let auth = await connectToGeovelo(username, password);
+  let user_id = auth.headers.get("userid");
+  let token = auth.headers.get("authorization");
+
+  let data = await fetchUserTraces(user_id, token);
+  let sanitized_data = processTracesData(data);
+
+  console.log(`Generating screen for user "${username}"`);
+
+  return c.json(sanitized_data);
 });
 
 export default app;
