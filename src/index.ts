@@ -163,19 +163,16 @@ app.post("/manage", async (c) => {
 });
 
 app.post("/markup", async (c) => {
-  let user_uuid = c.req.query("user_uuid");
-  let trmnl = c.req.query("trmnl");
+  const body = await c.req.formData();
+  let user_uuid = body.get("user_uuid");
+  let trmnl = body.get("trmnl");
   trmnl = JSON.parse(trmnl ?? '{}');
-
-  if (!user_uuid) {
-    return c.text("User UUID is missing", 500);
-  }
 
   let user_configuration = JSON.parse(
     await c.env.USER_CONFIGURATION.get(user_uuid)
   );
 
-  if (!user_configuration || !user_configuration.connected) {
+  if (!user_uuid || !user_configuration || !user_configuration.connected) {
     const error_layout = getErrorMarkup();
     return c.json({
       markup: error_layout,
