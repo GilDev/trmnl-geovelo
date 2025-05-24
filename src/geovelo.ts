@@ -27,7 +27,8 @@ export async function fetchUserTraces(userId: string, token: string) {
   );
 
   const response = await fetch(
-    `${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=custom&date_start=${start_formatted}&date_end=${end_formatted}&ordering=-start_datetime&page=1&page_size=50`,
+    //`${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=custom&date_start=${start_formatted}&date_end=${end_formatted}&ordering=-start_datetime&page=1&page_size=50`,
+    `${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=current_month&ordering=-start_datetime&page=1&page_size=100`,
     {
       method: "GET",
       headers: {
