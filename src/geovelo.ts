@@ -15,7 +15,7 @@ export async function connectToGeovelo(username: string, password: string) {
   });
 }
 
-export async function fetchUserTraces(userId: string, token: string) {
+export async function fetchUserTraces(userId: string, token: string, period: string) {
   let today = new Date();
   let start_formatted = format(
     startOfWeek(today, { weekStartsOn: 1 }),
@@ -28,7 +28,7 @@ export async function fetchUserTraces(userId: string, token: string) {
 
   const response = await fetch(
     //`${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=custom&date_start=${start_formatted}&date_end=${end_formatted}&ordering=-start_datetime&page=1&page_size=50`,
-    `${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=current_month&ordering=-start_datetime&page=1&page_size=100`,
+    `${GEOVELO_API_BASE_URL}/v6/users/${userId}/traces?period=${period}&ordering=-start_datetime&page=1&page_size=100`,
     {
       method: "GET",
       headers: {
