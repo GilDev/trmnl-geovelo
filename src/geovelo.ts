@@ -1,4 +1,4 @@
-import { format, startOfWeek, lastDayOfWeek, max } from "date-fns";
+import { format, startOfWeek, lastDayOfWeek } from "date-fns";
 
 // Geovelo API constants
 const GEOVELO_API_KEY = "0f8c781a-b4b4-4d19-b931-1e82f22e769f";

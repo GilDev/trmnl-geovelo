@@ -3,22 +3,22 @@
   "name": "trmnl-geovelo",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-13",
-  //"assets": {
-  //  "directory": "./public/",
-  //  "binding": "ASSETS"
-  //},
+  // "assets": {
+  //   "directory": "./public/",
+  //   "binding": "ASSETS"
+  // },
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
-  "kv_namespaces": [
-    {
-      "binding": "USER_CONFIGURATION",
-      "id": "14e83f0499f948cab3b1068e5ffee0d0"
-    }
-  ],
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "USER_CONFIGURATION",
+  //     "id": "14e83f0499f948cab3b1068e5ffee0d0"
+  //   }
+  //],
   // "r2_buckets": [
   //   {
   //     "binding": "MY_BUCKET",
