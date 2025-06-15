@@ -65,6 +65,6 @@ export function processTracesData(data: any) {
     longest_distance: Math.max(
       ...data.results.map((trace: any) => trace.distance)
     ),
-    last_trips: data.results.slice(-3),
+    last_trips: data.results,
   };
 }
