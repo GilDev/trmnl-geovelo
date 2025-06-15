@@ -54,7 +54,6 @@ export function processTracesData(data: any) {
   });
 
   return {
-    first_name: "John",
     count: data.count,
     average_speed: total_average_speed / data.count,
     average_duration: total_duration / data.count,
