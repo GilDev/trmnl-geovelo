@@ -1,7 +1,7 @@
 import { format, startOfWeek, lastDayOfWeek } from "date-fns";
 
 // Geovelo API constants
-const GEOVELO_API_KEY = "0f8c781a-b4b4-4d19-b931-1e82f22e769f";
+const GEOVELO_API_KEY = "0ecc2713-d912-45b0-958f-cd501908669b"; // Public API key given by Geovelo
 const GEOVELO_API_BASE_URL = "https://backend.geovelo.fr/api";
 
 export async function connectToGeovelo(username: string, password: string) {
